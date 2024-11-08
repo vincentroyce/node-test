@@ -5,7 +5,11 @@ const app = express()
 require('dotenv/config')
 
 const apiUrl = process.env.API_URL
+
+// Middlewares
 app.use(express.json())
+
+
 
 const db = mysql.createPool({
   host: process.env.HOSTNAME,    
@@ -18,7 +22,8 @@ const db = mysql.createPool({
   queueLimit: 0           
 });
 
-app.all(`${apiUrl}/products`,(request, response) => {
+app.all(`${apiUrl}/products`, async (request, response) => {
+  
   if (request.method != "GET") {
     response.status(405).json({
       status: "error",
@@ -27,13 +32,22 @@ app.all(`${apiUrl}/products`,(request, response) => {
     return
   }
 
+ let [result, _] = await db.execute('SELECT * FROM shop.products;', [], (err, result) => {
+    if (err) {
+      return res.status(500).json({
+        status: "error", 
+        err_msg: 'Database error'
+      });
+    }
+  })
+
   response.json({
     status: "ok",
-    response: "endpoint reached."
+    response: result
   })
 })
 
-app.all(`${apiUrl}/add-product`, (request, response) => {
+app.all(`${apiUrl}/add-product`, async (request, response) => {
 
   if (request.method != "POST") {
     return response.status(405).json({
@@ -75,7 +89,7 @@ app.all(`${apiUrl}/add-product`, (request, response) => {
 
   let {name, description, price} = data
 
-  db.query('INSERT INTO products (name, description, price) VALUES (?, ?, ?)', [name, description, price], (err, results) => {
+  await db.execute('INSERT INTO products (name, description, price) VALUES (?, ?, ?)', [name, description, price], (err, results) => {
     if (err) {
       return res.status(500).json({
         status: "error", 
@@ -84,9 +98,9 @@ app.all(`${apiUrl}/add-product`, (request, response) => {
     } 
   })
   
-  response.json({
+  response.status(201).json({
     status: "ok",
-    response: "body read."
+    response: "product successfully added"
   })
 })
 
