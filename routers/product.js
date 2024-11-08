@@ -4,6 +4,7 @@ import express from 'express'
 
 const router = express.Router()
 
+
 router.all(`/`, async (request, response) => {
   
   let getProduct = await Product.find();
@@ -14,7 +15,7 @@ router.all(`/`, async (request, response) => {
       err_msg: "Invalid http method."
     })
   }
-
+  
   if (!getProduct) {
     return response.status(500).json({
       status: "error",
@@ -28,7 +29,7 @@ router.all(`/`, async (request, response) => {
   })
 })
 
-router.all(`/add-product`,  (request, response) => {
+router.all(`/add-product`,  async (request, response) => {
 
   if (request.method != "POST") {
     return response.status(405).json({
@@ -69,6 +70,15 @@ router.all(`/add-product`,  (request, response) => {
   }
 
   let {name, description, price} = data
+  
+  let getProduct = await Product.find({ name: name}).limit(1);
+  
+  if (getProduct.length != 0) {
+    return response.status(409).json({
+      status: "error",
+      response: "product already exists"
+    })
+  }
 
   const product = new Product({
     name: name,
