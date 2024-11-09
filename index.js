@@ -1,4 +1,8 @@
-import router from './routers/product.js'
+import productRouter from './views/products.js'
+import categoryRouter from './views/categories.js'
+import orderRouter from './views/orders.js'
+import orderItemRouter from './views/order_items.js'
+import userRouter from './views/users.js'
 import express from 'express'
 import mongoose from 'mongoose'
 import dotenv from 'dotenv'
@@ -11,7 +15,11 @@ const apiUrl = dotenv.config().parsed.API_URL
 app.use(express.json())
 
 // Routers
-app.use(`${apiUrl}/products`, router)
+app.use(`${apiUrl}/products`, productRouter)
+app.use(`${apiUrl}/categories`, categoryRouter)
+app.use(`${apiUrl}/orders`, orderRouter)
+app.use(`${apiUrl}/order-items`, orderItemRouter)
+app.use(`${apiUrl}/users`, userRouter)
 
 
 //DB Connection

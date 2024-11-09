@@ -1,20 +1,11 @@
 import Product from '../models/product.js'
 import express from 'express'
 
-
 const router = express.Router()
 
-
-router.all(`/`, async (request, response) => {
+router.get(`/`, async (request, response) => {
   
   let getProduct = await Product.find();
-
-  if (request.method != "GET") {
-    return response.status(405).json({
-      status: "error",
-      err_msg: "Invalid http method."
-    })
-  }
   
   if (!getProduct) {
     return response.status(500).json({
@@ -29,14 +20,7 @@ router.all(`/`, async (request, response) => {
   })
 })
 
-router.all(`/add-product`,  async (request, response) => {
-
-  if (request.method != "POST") {
-    return response.status(405).json({
-      status: "error",
-      err_msg: "Invalid http method"
-    }) 
-  }
+router.post(`/add-product`,  async (request, response) => {
 
   let data = request.body
 
