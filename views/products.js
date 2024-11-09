@@ -55,7 +55,7 @@ router.post(`/add-product`,  async (request, response) => {
 
   let {name, description, price} = data
   
-  let getProduct = await Product.find({ name: name}).limit(1);
+  let getProduct = await Product.find({ name: name }).limit(1);
   
   if (getProduct.length != 0) {
     return response.status(409).json({
