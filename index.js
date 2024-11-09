@@ -3,6 +3,7 @@ import categoryRouter from './views/categories.js'
 import orderRouter from './views/orders.js'
 import orderItemRouter from './views/order_items.js'
 import userRouter from './views/users.js'
+import cors from 'cors'
 import express from 'express'
 import mongoose from 'mongoose'
 import dotenv from 'dotenv'
@@ -13,6 +14,8 @@ const apiUrl = dotenv.config().parsed.API_URL
 
 // Middlewares
 app.use(express.json())
+app.use(cors())
+app.options('*', cors())
 
 // Routers
 app.use(`${apiUrl}/products`, productRouter)

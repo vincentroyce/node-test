@@ -70,16 +70,18 @@ router.post(`/add-product`,  async (request, response) => {
     price: price
   })
   
-  product.save().then(createdProduct => {
-    response.status(201).json({
-      status: "ok",
-      response: "product successfully added"
+  const saveProduct = product.save()
+
+  if (!saveProduct) {
+    return response.status(404).json({
+      status:"error",
+      err_msg: "unable to save product."
     })
-  }).catch((err) => {
-    response.status(500).json({
-      status: "ok",
-      response: "Database error. " + err
-    })
+  }
+
+  response.status(201).json({
+    status: "ok",
+    response: saveProduct
   })
 })
 
