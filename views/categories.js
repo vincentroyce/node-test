@@ -4,6 +4,7 @@ import mongoose from 'mongoose'
 
 const router = express.Router()
 
+// Get all categories
 router.get(`/`, async (request, response) => {
   
   let getCategory = await Category.find();
@@ -21,6 +22,34 @@ router.get(`/`, async (request, response) => {
   })
 })
 
+// Get single category
+router.get(`/:id`, async(request, response) => {
+
+  let data = request.params;
+
+  if (!mongoose.isValidObjectId(data["id"])) {
+    return response.status(400).json({
+      status: "error",
+      err_msg: "invalid id format"
+    })
+  }
+
+  let getSingleCategory = await Category.findById(data["id"])
+
+  if (!getSingleCategory) {
+    return response.status(404).json({
+      status: "error",
+      err_msg: "category not found"
+    })
+  }
+  response.json({
+    status: "ok",
+    response: getSingleCategory
+  })
+
+})
+
+// Add a single category
 router.post(`/add-category`, async (request, response) => {
 
   let data = request.body
@@ -76,6 +105,7 @@ router.post(`/add-category`, async (request, response) => {
   })
 })
 
+// Delete a category
 router.delete("/delete-category/:id", async (request, response) => {
 
   let data = request.params
@@ -92,7 +122,7 @@ router.delete("/delete-category/:id", async (request, response) => {
   if (!removeCategory) {
     return response.status(404).json({
       status: "error",
-      err_msg:  "unable to remove the category."
+      err_msg:  "category not found."
     }) 
   }
 
@@ -102,5 +132,6 @@ router.delete("/delete-category/:id", async (request, response) => {
     response: "category deleted",
   })
 })
+
 
 export default router
