@@ -26,16 +26,14 @@ router.get(`/`, async (request, response) => {
 // Get single product
 router.get(`/:id`, async (request, response) => {
 
-  let data = request.params
-
-  if (!mongoose.isValidObjectId(data.id)) {
+  if (!mongoose.isValidObjectId(request.params.id)) {
     return response.status(400).json({
       status: "error",
       err_msg: "invalid object id"
     })
   }
 
-  let product = await Product.findById(data.id)
+  let product = await Product.findById(request.params.id)
 
   if (!product) {
     return response.status(404).json({
@@ -44,9 +42,17 @@ router.get(`/:id`, async (request, response) => {
     })
   }
 
+  let populateProduct = await Product.populate(product, { path: 'category', select: '_id name color icon' })
+  if (!populateProduct) {
+    return response.status(404).json({
+      status: "error",
+      err_msg: "unable to populate the product"
+    })
+  }
+
   response.json({
     status: "ok",
-    response: product
+    response: populateProduct
   })
 })
 
@@ -61,44 +67,42 @@ router.post(`/add-product`,  async (request, response) => {
     })
   }
 
-  let data = request.body
-
-  if (!data || Object.entries(data).length === 0) {
+  if (!request.body || Object.entries(request.body).length === 0) {
     return response.status(400).json({
       status: "error",
       err_msg: "empty or malformed body"
     })
   }
 
-  if (!data["name"]) {
+  if (!request.body["name"]) {
     return response.status(400).json({
       status: "error",
       err_msg: "missing name key"
     })
   }
 
-  if (!data["description"]) {
+  if (!request.body["description"]) {
     return response.status(400).json({
       status: "error",
       err_msg: "missing description key"
     })
   }
 
-  if (!data["category"]) {
+  if (!request.body["category"]) {
     return response.status(400).json({
       status: "error",
       err_msg: "missing category key"
     })
   }
 
-  if (!mongoose.isValidObjectId(data["category"])) {
+  if (!mongoose.isValidObjectId(request.body["category"])) {
     return response.status(400).json({
       status: "error",
       err_msg: "invalid category id"
     })
   }
 
-  let category = await Category.findById(data["category"])
+  let category = await Category.findById(request.body["category"])
 
   if (!category) {
     return response.status(404).json({
@@ -107,14 +111,14 @@ router.post(`/add-product`,  async (request, response) => {
     })
   }
 
-  if (!data["countInStock"]) {
+  if (!request.body["countInStock"]) {
     return response.status(400).json({
       status: "error",
       err_msg: "missing countInStock key"
     })
   }
   
-  let getProduct = await Product.find({ name: data["name"] }).limit(1);
+  let getProduct = await Product.find({ name: request.body["name"] }).limit(1);
   
   if (getProduct.length != 0) {
     return response.status(409).json({
@@ -124,16 +128,16 @@ router.post(`/add-product`,  async (request, response) => {
   }
 
   const product = new Product({
-    name: data.name,
-    description:data.description,
-    richDescription: data.richDescription,
-    image: data.image,
-    brand: data.brand,
-    price: data.price,
-    category: data.category,
-    countInStock: data.countInStock,
-    rating: data.rating,
-    isFeatured: data.isFeatured
+    name: request.body.name,
+    description:request.body.description,
+    richDescription: request.body.richDescription,
+    image: request.body.image,
+    brand: request.body.brand,
+    price: request.body.price,
+    category: request.body.category,
+    countInStock: request.body.countInStock,
+    rating: request.body.rating,
+    isFeatured: request.body.isFeatured
   })
   
   const saveProduct = await product.save()

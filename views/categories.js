@@ -25,16 +25,14 @@ router.get(`/`, async (request, response) => {
 // Get single category
 router.get(`/:id`, async(request, response) => {
 
-  let data = request.params;
-
-  if (!mongoose.isValidObjectId(data["id"])) {
+  if (!mongoose.isValidObjectId(request.params["id"])) {
     return response.status(400).json({
       status: "error",
       err_msg: "invalid id format"
     })
   }
 
-  let getSingleCategory = await Category.findById(data["id"])
+  let getSingleCategory = await Category.findById(request.params["id"])
 
   if (!getSingleCategory) {
     return response.status(404).json({
@@ -52,42 +50,38 @@ router.get(`/:id`, async(request, response) => {
 // Add a single category
 router.post(`/add-category`, async (request, response) => {
 
-  let data = request.body
-
-  if (!data || Object.entries(data).length == 0) {
+  if (!request.body || Object.entries(request.body).length == 0) {
     return response.status(400).json({
       status: "error",
       err_msg: "malformed / empty body.",
     })
   }
 
-  if (!data["name"]) {
+  if (!request.body["name"]) {
     return response.status(400).json({
       status: "error",
       err_msg: "missing name key from body.",
     })
   }
 
-  if (!data["color"]) {
+  if (!request.body["color"]) {
     return response.status(400).json({
       status: "error",
       err_msg: "missing color key from body.",
     })
   }
 
-  if (!data["icon"]) {
+  if (!request.body["icon"]) {
     return response.status(400).json({
       status: "error",
       err_msg: "missing icon key from body.",
     })
   }
 
-  const {name, color, icon} = data
-
   const category = new Category({
-    name: name,
-    color: color,
-    icon: icon,
+    name: request.body.name,
+    color: request.body.color,
+    icon: request.body.icon,
   })
 
   let saveCategory = await category.save()
@@ -142,16 +136,14 @@ router.put("/update-category/:id", async (request, response) => {
 // Delete a category
 router.delete("/delete-category/:id", async (request, response) => {
 
-  let data = request.params
-
-  if (!mongoose.isValidObjectId(data["id"])) {
+  if (!mongoose.isValidObjectId(request.params["id"])) {
     return response.status(400).json({
       status: "error",
       err_msg:  "invalid id format."
     }) 
   }
 
-  let removeCategory = await Category.findByIdAndDelete(data["id"]) 
+  let removeCategory = await Category.findByIdAndDelete(request.params["id"]) 
 
   if (!removeCategory) {
     return response.status(404).json({
@@ -161,7 +153,7 @@ router.delete("/delete-category/:id", async (request, response) => {
   }
 
   response.json({
-    id: data["id"],
+    id: request.params["id"],
     status: "ok",
     response: "category deleted",
   })
