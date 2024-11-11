@@ -3,6 +3,7 @@ import express from 'express'
 
 const router = express.Router()
 
+// Get all orders
 router.get(`/`, async (request, response) => {
   
   let getOrder = await Order.find();

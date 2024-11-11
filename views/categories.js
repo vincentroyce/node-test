@@ -1,5 +1,5 @@
 import Category from '../models/category.js'
-import express from 'express'
+import express, { request, response } from 'express'
 import mongoose from 'mongoose'
 
 const router = express.Router()
@@ -103,6 +103,40 @@ router.post(`/add-category`, async (request, response) => {
     status:"ok",
     response: saveCategory
   })
+})
+
+//Update a category
+router.put("/update-category/:id", async (request, response) => {
+
+  if (!mongoose.isValidObjectId(request.params["id"])) {
+    return response.status(400).json({
+      status: "error",
+      err_msg:  "invalid id format."
+    }) 
+  }
+
+  let updateItem = { 
+    name: request.body["name"], 
+    color:request.body["color"], 
+    icon:request.body["icon"]
+  }
+
+  let updateCategory = await Category.findByIdAndUpdate(request.params["id"], updateItem, { returnDocument: 'after' })
+
+  if (!updateCategory) {
+    return response.status(500).json({
+      status: "error",
+      err_msg:  "internal server error"
+    }) 
+  }
+
+  console.log(updateItem)
+
+  response.json({
+    status: "ok",
+    err_msg:  updateCategory
+  })
+
 })
 
 // Delete a category

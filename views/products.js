@@ -3,6 +3,7 @@ import express from 'express'
 
 const router = express.Router()
 
+// Get all products
 router.get(`/`, async (request, response) => {
   
   let getProduct = await Product.find();
@@ -20,6 +21,7 @@ router.get(`/`, async (request, response) => {
   })
 })
 
+// Add a single product
 router.post(`/add-product`,  async (request, response) => {
 
   let data = request.body

@@ -3,6 +3,7 @@ import express from 'express'
 
 const router = express.Router()
 
+// Get all user.
 router.get(`/`, async (request, response) => {
   
   let getUser = await User.find();
