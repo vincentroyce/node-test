@@ -23,6 +23,34 @@ router.get(`/`, async (request, response) => {
   })
 })
 
+// Get single product
+router.get(`/:id`, async (request, response) => {
+
+  let data = request.params
+
+  if (!mongoose.isValidObjectId(data.id)) {
+    return response.status(400).json({
+      status: "error",
+      err_msg: "invalid object id"
+    })
+  }
+
+  let product = await Product.findById(data.id)
+
+  if (!product) {
+    return response.status(404).json({
+      status: "error",
+      err_msg: "unable to find the product"
+    })
+  }
+
+  response.json({
+    status: "ok",
+    response: product
+  })
+})
+
+
 // Add a single product
 router.post(`/add-product`,  async (request, response) => {
 
