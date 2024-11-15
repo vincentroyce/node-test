@@ -294,4 +294,24 @@ router.delete('/delete-product/:id', async (request, response) => {
   })
 })
 
+// TODO: Get count of products.
+
+router.get('/get/count', async (request, response) => {
+
+  let productCount = await Product.countDocuments()
+
+  // if (!productCount) {
+  //   return response.status(500).json({
+  //     status: "error",
+  //     err_msg: "unable to get product count"
+  //   })
+  // }
+
+  response.json({
+    status: "ok",
+    response: productCount || 0
+  })
+
+})
+
 export default router;
