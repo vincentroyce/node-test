@@ -26,14 +26,14 @@ router.get(`/`, async (request, response) => {
 // Get single product
 router.get(`/:id`, async (request, response) => {
 
-  if (!mongoose.isValidObjectId(request.params.id)) {
+  if (!mongoose.isValidObjectId(request.params["id"])) {
     return response.status(400).json({
       status: "error",
       err_msg: "invalid object id"
     })
   }
 
-  let product = await Product.findById(request.params.id)
+  let product = await Product.findById(request.params["id"])
 
   if (!product) {
     return response.status(404).json({
@@ -107,7 +107,7 @@ router.post(`/add-product`,  async (request, response) => {
   if (!category) {
     return response.status(404).json({
       status: "error",
-      err_msg: "unable to find this category"
+      err_msg: "unable to find category"
     })
   }
 
@@ -152,6 +152,110 @@ router.post(`/add-product`,  async (request, response) => {
   response.status(201).json({
     status: "ok",
     response: saveProduct
+  })
+})
+
+router.put(`/update-product/:id`, async (request, response) => {
+
+  if (!request.is('application/json')) {
+    return  response.status(415).json({
+      status: "error",
+      err_msg: "invalid mime type"
+    })
+  }
+
+  if (!request.body || Object.entries(request.body).length === 0) {
+    return response.status(400).json({
+      status: "error",
+      err_msg: "empty or malformed body"
+    })
+  }
+
+  if (!request.body["name"]) {
+    return response.status(400).json({
+      status: "error",
+      err_msg: "missing name key"
+    })
+  }
+
+  if (!request.body["description"]) {
+    return response.status(400).json({
+      status: "error",
+      err_msg: "missing description key"
+    })
+  }
+
+  if (!request.body["category"]) {
+    return response.status(400).json({
+      status: "error",
+      err_msg: "missing category key"
+    })
+  }
+
+  if (!mongoose.isValidObjectId(request.body["category"])) {
+    return response.status(400).json({
+      status: "error",
+      err_msg: "invalid category id"
+    })
+  }
+
+  let category = await Category.findById(request.body["category"])
+
+  if (!category) {
+    return response.status(404).json({
+      status: "error",
+      err_msg: "unable to find category"
+    })
+  }
+
+  if (!request.body["countInStock"]) {
+    return response.status(400).json({
+      status: "error",
+      err_msg: "missing countInStock key"
+    })
+  }
+
+  if (!mongoose.isValidObjectId(request.params["id"])) {
+    return response.status(400).json({
+      status: "error",
+      err_msg: "invalid product id"
+    })
+  }
+
+  let checkProduct = await Product.findById(request.params["id"])
+
+  if (!checkProduct) {
+    return response.status(400).json({
+      status: "error",
+      err_msg: "product not found"
+    })
+  }
+  
+  const product = {
+    name: request.body.name,
+    description:request.body.description,
+    richDescription: request.body.richDescription,
+    image: request.body.image,
+    brand: request.body.brand,
+    price: request.body.price,
+    category: request.body.category,
+    countInStock: request.body.countInStock,
+    rating: request.body.rating,
+    isFeatured: request.body.isFeatured
+  }
+  
+  const updateProduct = await Product.findByIdAndUpdate(request.params["id"], product, { returnDocument: 'after' })
+
+  if (!updateProduct) {
+    return response.status(404).json({
+      status:"error",
+      err_msg: "unable to update product."
+    })
+  }
+
+  response.json({
+    status: "ok",
+    response: updateProduct
   })
 })
 

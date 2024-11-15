@@ -1,7 +1,11 @@
 import mongoose from "mongoose";
 
 const orderItemSchema = mongoose.Schema({
-  productID: Number,
+  product: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Product',
+    required: true,
+  },
   quantity: Number,
 })
 

@@ -9,7 +9,11 @@ const orderSchema = mongoose.Schema({
   phone: Number,
   status: String,
   totalPrice: Number,
-  userID: Number,
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+  },
   dateOrdered: Date,
 })
 
