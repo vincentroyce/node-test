@@ -1,5 +1,5 @@
 import Product from '../models/product.js'
-import express from 'express'
+import express, { request } from 'express'
 import mongoose from 'mongoose'
 import Category from '../models/category.js'
 
@@ -155,6 +155,7 @@ router.post(`/add-product`,  async (request, response) => {
   })
 })
 
+// Update single product
 router.put(`/update-product/:id`, async (request, response) => {
 
   if (!request.is('application/json')) {
@@ -256,6 +257,40 @@ router.put(`/update-product/:id`, async (request, response) => {
   response.json({
     status: "ok",
     response: updateProduct
+  })
+})
+
+
+router.delete('/delete-product/:id', async (request, response) => {
+
+  if (!mongoose.isValidObjectId(request.params["id"])) {
+    return response.status(400).json({
+      status: "error",
+      err_msg: "invalid id format"
+    })
+  }
+
+  let findProduct = await Product.findById(request.params["id"])
+
+  if (!findProduct) {
+    return response.status(404).json({
+      status: "error",
+      err_msg: "unable to find product"
+    })
+  }
+
+  // Delete a single product
+  let deleteProduct = await Product.findByIdAndDelete(request.params["id"])
+  if (!deleteProduct) {
+    return response.status(500).json({
+      status: "error",
+      err_msg: "unable to delete product"
+    })
+  }
+
+  response.json({
+    status : "ok",
+    response: "product deleted"
   })
 })
 
