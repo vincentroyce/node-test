@@ -171,26 +171,6 @@ router.put(`/update-product/:id`, async (request, response) => {
       err_msg: "empty or malformed body"
     })
   }
-  // if (!request.body["name"]) {
-  //   return response.status(400).json({
-  //     status: "error",
-  //     err_msg: "missing name key"
-  //   })
-  // }
-
-  // if (!request.body["description"]) {
-  //   return response.status(400).json({
-  //     status: "error",
-  //     err_msg: "missing description key"
-  //   })
-  // }
-
-  // if (!request.body["category"]) {
-  //   return response.status(400).json({
-  //     status: "error",
-  //     err_msg: "missing category key"
-  //   })
-  // }
 
     if (request.body["category"] && !mongoose.isValidObjectId(request.body["category"])) {
       return response.status(400).json({
@@ -208,14 +188,6 @@ router.put(`/update-product/:id`, async (request, response) => {
       })
     }
   
-
-  // if (!request.body["countInStock"]) {
-  //   return response.status(400).json({
-  //     status: "error",
-  //     err_msg: "missing countInStock key"
-  //   })
-  // }
-
   if (!mongoose.isValidObjectId(request.params["id"])) {
     return response.status(400).json({
       status: "error",
@@ -231,19 +203,6 @@ router.put(`/update-product/:id`, async (request, response) => {
       err_msg: "product not found"
     })
   }
-  
-  // const product = {
-  //   name: request.body.name,
-  //   description:request.body.description,
-  //   richDescription: request.body.richDescription,
-  //   image: request.body.image,
-  //   brand: request.body.brand,
-  //   price: request.body.price,
-  //   category: request.body.category,
-  //   countInStock: request.body.countInStock,
-  //   rating: request.body.rating,
-  //   isFeatured: request.body.isFeatured
-  // }
   
   const updateProduct = await Product.findByIdAndUpdate(request.params["id"], request.body, { returnDocument: 'after' })
 
