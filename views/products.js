@@ -1,14 +1,16 @@
 import Product from '../models/product.js'
-import express, { request } from 'express'
-import mongoose from 'mongoose'
+import express from 'express'
+import mongoose, { isValidObjectId } from 'mongoose'
 import Category from '../models/category.js'
 
 const router = express.Router()
 
-// Get all products
+// Get all products and filter categories by id
 router.get(`/`, async (request, response) => {
-  
-  let getProduct = await Product.find();
+
+  let filter = request.query["categories"] ? { category: request.query["categories"].split(',').filter(id => mongoose.isValidObjectId(id)) } : {}
+
+  let getProduct = await Product.find(filter).populate('category');
   
   if (!getProduct) {
     return response.status(500).json({
@@ -207,7 +209,7 @@ router.put(`/update-product/:id`, async (request, response) => {
   const updateProduct = await Product.findByIdAndUpdate(request.params["id"], request.body, { returnDocument: 'after' })
 
   if (!updateProduct) {
-    return response.status(404).json({
+    return response.status(500).json({
       status:"error",
       err_msg: "unable to update product."
     })
@@ -253,8 +255,7 @@ router.delete('/delete-product/:id', async (request, response) => {
   })
 })
 
-// TODO: Get count of products.
-
+// Get count of products.
 router.get('/get/count', async (request, response) => {
 
   let productCount = await Product.countDocuments()
@@ -268,9 +269,30 @@ router.get('/get/count', async (request, response) => {
 
   response.json({
     status: "ok",
-    response: productCount || 0
+    response: productCount 
   })
+})
 
+// Get featured products only 
+router.get('/get/featured/', async (request, response) => {
+
+  let productCount = await Product.find({ isFeatured: true })
+
+  response.json({
+    status: "ok",
+    response: productCount
+  })
+})
+
+// Get featured products only and limit it base on parameter
+router.get('/get/featured/:limit', async (request, response) => {
+
+  let productCount = await Product.find({ isFeatured: true }).limit((+request.params["limit"]) ?? 0)
+
+  response.json({
+    status: "ok",
+    response: productCount
+  })
 })
 
 export default router;
