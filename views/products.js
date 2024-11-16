@@ -171,50 +171,50 @@ router.put(`/update-product/:id`, async (request, response) => {
       err_msg: "empty or malformed body"
     })
   }
+  // if (!request.body["name"]) {
+  //   return response.status(400).json({
+  //     status: "error",
+  //     err_msg: "missing name key"
+  //   })
+  // }
 
-  if (!request.body["name"]) {
-    return response.status(400).json({
-      status: "error",
-      err_msg: "missing name key"
-    })
-  }
+  // if (!request.body["description"]) {
+  //   return response.status(400).json({
+  //     status: "error",
+  //     err_msg: "missing description key"
+  //   })
+  // }
 
-  if (!request.body["description"]) {
-    return response.status(400).json({
-      status: "error",
-      err_msg: "missing description key"
-    })
-  }
+  // if (!request.body["category"]) {
+  //   return response.status(400).json({
+  //     status: "error",
+  //     err_msg: "missing category key"
+  //   })
+  // }
 
-  if (!request.body["category"]) {
-    return response.status(400).json({
-      status: "error",
-      err_msg: "missing category key"
-    })
-  }
+    if (request.body["category"] && !mongoose.isValidObjectId(request.body["category"])) {
+      return response.status(400).json({
+        status: "error",
+        err_msg: "invalid category id"
+      })
+    }
+  
+    let category = await Category.findById(request.body["category"])
+  
+    if (request.body["category"] && !category) {
+      return response.status(404).json({
+        status: "error",
+        err_msg: "unable to find category"
+      })
+    }
+  
 
-  if (!mongoose.isValidObjectId(request.body["category"])) {
-    return response.status(400).json({
-      status: "error",
-      err_msg: "invalid category id"
-    })
-  }
-
-  let category = await Category.findById(request.body["category"])
-
-  if (!category) {
-    return response.status(404).json({
-      status: "error",
-      err_msg: "unable to find category"
-    })
-  }
-
-  if (!request.body["countInStock"]) {
-    return response.status(400).json({
-      status: "error",
-      err_msg: "missing countInStock key"
-    })
-  }
+  // if (!request.body["countInStock"]) {
+  //   return response.status(400).json({
+  //     status: "error",
+  //     err_msg: "missing countInStock key"
+  //   })
+  // }
 
   if (!mongoose.isValidObjectId(request.params["id"])) {
     return response.status(400).json({
@@ -232,20 +232,20 @@ router.put(`/update-product/:id`, async (request, response) => {
     })
   }
   
-  const product = {
-    name: request.body.name,
-    description:request.body.description,
-    richDescription: request.body.richDescription,
-    image: request.body.image,
-    brand: request.body.brand,
-    price: request.body.price,
-    category: request.body.category,
-    countInStock: request.body.countInStock,
-    rating: request.body.rating,
-    isFeatured: request.body.isFeatured
-  }
+  // const product = {
+  //   name: request.body.name,
+  //   description:request.body.description,
+  //   richDescription: request.body.richDescription,
+  //   image: request.body.image,
+  //   brand: request.body.brand,
+  //   price: request.body.price,
+  //   category: request.body.category,
+  //   countInStock: request.body.countInStock,
+  //   rating: request.body.rating,
+  //   isFeatured: request.body.isFeatured
+  // }
   
-  const updateProduct = await Product.findByIdAndUpdate(request.params["id"], product, { returnDocument: 'after' })
+  const updateProduct = await Product.findByIdAndUpdate(request.params["id"], request.body, { returnDocument: 'after' })
 
   if (!updateProduct) {
     return response.status(404).json({
