@@ -1,6 +1,6 @@
 import Product from '../models/product.js'
 import express from 'express'
-import mongoose, { isValidObjectId } from 'mongoose'
+import mongoose from 'mongoose'
 import Category from '../models/category.js'
 
 const router = express.Router()

@@ -19,4 +19,12 @@ const orderSchema = mongoose.Schema({
 
 const Order = mongoose.model('Order', orderSchema)
 
+orderSchema.virtual('id').get(function () {
+  return this._id.toHexString();
+})
+
+orderSchema.set('toJSON', {
+  virtuals: true,
+})
+
 export default Order

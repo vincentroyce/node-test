@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
 
-let categorySchema = mongoose.Schema({
+const categorySchema = mongoose.Schema({
   name: {
     type: String,
     required: true,
@@ -14,5 +14,13 @@ let categorySchema = mongoose.Schema({
 })
 
 const Category = mongoose.model('Category', categorySchema)
+
+  categorySchema.virtual('id').get(function () {
+    return this._id.toHexString();
+  })
+
+categorySchema.set('toJSON', {
+  virtuals: true,
+})
 
 export default Category
