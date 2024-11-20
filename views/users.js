@@ -2,6 +2,8 @@ import User from '../models/user.js'
 import express from 'express'
 import bcrypt from 'bcryptjs'
 import mongoose from 'mongoose'
+import jwt from 'jsonwebtoken'
+import dotenv from 'dotenv'
 
 const router = express.Router()
 
@@ -170,12 +172,12 @@ router.post('/login', async (request, response) => {
     })
   }
 
-  //    "email":"sophia.martinez@domain.com",
-  //    "password": "S0ph1aM@rtinez123"
+  const loginToken = jwt.sign({ user_id: user.id }, dotenv.config().parsed.JWT_SECRET, { expiresIn: '1d' })
 
   response.json({
     status :"ok",
-    response: user
+    response: user,
+    token: loginToken
   })
 })
 
