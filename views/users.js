@@ -1,13 +1,14 @@
 import User from '../models/user.js'
 import express from 'express'
 import bcrypt from 'bcryptjs'
+import mongoose from 'mongoose'
 
 const router = express.Router()
 
 // Get all user.
 router.get(`/`, async (request, response) => {
   
-  let getUser = await User.find();
+  let getUser = await User.find().select("-password");
   
   if (!getUser) {
     return response.status(500).json({
@@ -19,6 +20,31 @@ router.get(`/`, async (request, response) => {
   response.json({
     status:"ok",
     response: getUser,
+  })
+})
+
+// Get single user
+router.get(`/:id`, async (request, response) => {
+
+  if (!mongoose.isValidObjectId(request.params["id"])) {
+    return response.status(400).json({
+      status: "error",
+      err_msg: "invalid id format"
+    })
+  }
+
+  const getUser = await User.findById(request.params["id"], "-password")
+
+  if (!getUser) {
+    return response.status(404).json({
+      status: "error",
+      err_msg: "unable to find user"
+    })
+  }
+
+  response.json({
+    status: "ok",
+    response: getUser
   })
 })
 
@@ -96,5 +122,61 @@ router.post(`/register`, async (request, response) => {
 
 })
 
+router.post('/login', async (request, response) => {
+
+  if (!request.is('application/json')) {
+    return response.status(415).json({
+      status: "error",
+      err_msg: "invalid mime type"
+    })
+  }
+
+  if (!request.body || Object.entries(request.body).length == 0) {
+    return response.status(400).json({
+      status: "error",
+      err_msg: "empty body"
+    })
+  }
+
+  if (!request.body.email) {
+    return response.status(400).json({
+      status: "error",
+      err_msg: "missing email key in body"
+    })
+  }
+
+  if (!request.body.password) {
+    return response.status(400).json({
+      status: "error",
+      err_msg: "missing password key in body"
+    })
+  }
+
+  const user = await User.findOne({
+    email: request.body.email,
+  })
+
+  if (!user) {
+    return response.status(404).json({
+      status: "error",
+      err_msg: "unable to find the user."
+    })
+  }
+
+  if (!bcrypt.compareSync(request.body.password, user.password)) {
+    return response.status(401).json({
+      status: "error",
+      err_msg: "invalid credentials."
+    })
+  }
+
+  //    "email":"sophia.martinez@domain.com",
+  //    "password": "S0ph1aM@rtinez123"
+
+  response.json({
+    status :"ok",
+    response: user
+  })
+})
 
 export default router
