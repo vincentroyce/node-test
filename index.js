@@ -7,15 +7,20 @@ import cors from 'cors'
 import express from 'express'
 import mongoose from 'mongoose'
 import dotenv from 'dotenv'
+import authJWT from './helper/jwt.js'
+import handlerError from './helper/error_handler.js'
 
 const app = express()
 
 const apiUrl = dotenv.config().parsed.API_URL
 
-// Middlewares
-app.use(express.json())
 app.use(cors())
 app.options('*', cors())
+
+// Middlewares
+app.use(express.json())
+app.use(authJWT())
+app.use(handlerError)
 
 // Routers
 app.use(`${apiUrl}/products`, productRouter)
