@@ -7,7 +7,8 @@ const authJWT = () => {
     algorithms: ['HS256'] 
   }).unless({
     path: [
-      `${dotenv.config().parsed.API_URL}/users/login`
+      `${dotenv.config().parsed.API_URL}/users/login`,
+      `${dotenv.config().parsed.API_URL}/users/register`
     ]
   })
 }
