@@ -1,5 +1,5 @@
 import Category from '../models/category.js'
-import express, { request, response } from 'express'
+import express from 'express'
 import mongoose from 'mongoose'
 
 const router = express.Router()
