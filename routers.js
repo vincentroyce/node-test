@@ -1,8 +1,8 @@
-import productRouter from './views/products.js'
-import categoryRouter from './views/categories.js'
-import orderRouter from './views/orders.js'
-import orderItemRouter from './views/order_items.js'
-import userRouter from './views/users.js'
+import productRouter from './routers/products.js'
+import categoryRouter from './routers/categories.js'
+import orderRouter from './routers/orders.js'
+import orderItemRouter from './routers/order_items.js'
+import userRouter from './routers/users.js'
 import dotenv from 'dotenv'
 
 function RegisterRouters(app) {
