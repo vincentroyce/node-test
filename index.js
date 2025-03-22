@@ -6,7 +6,6 @@ import ConnectToDB from './db_connection.js'
 import dotenv from 'dotenv'
 
 const app = express()
-console.log(dotenv.config().parsed.DB_URL_CONNECTION)
 app.use(cors())
 app.options('*', cors())
 
